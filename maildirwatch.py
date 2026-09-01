@@ -432,7 +432,10 @@ def main():
     success = True
 
     try:
-        GLibUnix.signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, Gtk.main_quit)
+        if hasattr(GLibUnix, "signal_add"):
+            GLibUnix.signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, Gtk.main_quit)
+        else:
+            GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, Gtk.main_quit)
 
         def unhandled_exception_hook(etype, value, traceback):
             logger.exception(
