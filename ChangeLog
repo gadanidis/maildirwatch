@@ -1,3 +1,10 @@
+2026-09-02  Michał Krzywkowski  <k.michal@zoho.com>
+
+	Version 0.2.2
+
+	- Fix an issue where we failed to install SIGINT signal handler with
+	newer GLib versions (GitHub#9).
+
 2025-09-12  Michał Krzywkowski  <k.michal@zoho.com>
 
 	Version 0.2.1
