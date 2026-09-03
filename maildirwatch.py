@@ -162,6 +162,7 @@ def hash_message(message):
     headers (e.g. ``From`, ``Subject``).
 
     """
+    message = message[1]
     hasher = hashlib.sha1()
     hasher.update(message.get("Date", "").encode())
     hasher.update(message.get("From", "").encode())
@@ -248,6 +249,9 @@ class GNotifier:
         server_capabilities = Notify.get_server_caps()
 
         for message in messages:
+            folder = message[0]
+            message = message[1]
+
             if body:
                 body += "\n--\n"
 
@@ -264,7 +268,7 @@ class GNotifier:
                 sender = html.escape(sender)
                 subject = "<b>{}</b>".format(subject)
                 sender = "<i>{}</i>".format(sender)
-            body += "{} from {}".format(subject, sender)
+            body += "{} from {} in {}".format(subject, sender, folder)
 
         notification = Notify.Notification.new(
             summary=summary, body=body, icon="mail-unread"
@@ -347,8 +351,13 @@ class App:
 
         try:
             with open(path) as inputfile:
+                folder = os.path.dirname(os.path.dirname(path))
+                parent = os.path.dirname(folder)
+                folder_identifier = (
+                    f"{os.path.basename(parent)}/{os.path.basename(folder)}"
+                )
                 message = email.message_from_file(inputfile, policy=email.policy.SMTP)
-                self._queue.append(message)
+                self._queue.append((folder_identifier, message))
         except FileNotFoundError:
             logger.error("Message file not found: %s", path)
             return
